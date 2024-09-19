@@ -1,0 +1,82 @@
+# https://moonrepo.dev/docs/config/project
+$schema: "https://moonrepo.dev/schemas/project.json"
+id: "webserver"
+project:
+  name: "webserver"
+  description: "webserver"
+tags:
+  - "webserver"
+type: "application"
+language: "rust"
+platform: "rust"
+docker:
+  file:
+    buildTask: "build"
+    image: rust:1.80.1-slim-bullseye
+    startTask: "target/release/webserver"
+  scaffold:
+    include:
+      - 'templates/**/*'
+      - 'assets/**/*'
+      - 'styles/**/*'
+      - 'tailwind.config.js'
+tasks:
+  dev:
+    command: "cargo watch -c -w src -w templates -w styles -- moon run start"
+    local: true
+  styles:
+    command: "bunx tailwindcss -i styles/tailwind.css -o assets/main.css"
+    platform: "system"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+    outputs:
+      - "assets/main.css"
+  build:
+    command: "cargo build"
+    deps:
+      - "styles"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+    outputs:
+      - "target/"
+  start:
+    local: true
+    command: "cargo run --release"
+    deps:
+      - "styles"
+  release:
+    command: "cargo build --release"
+    deps:
+      - "styles"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+    outputs:
+      - "target/"
+  test:
+    command: "cargo test"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+    outputs:
+      - "target/"
+  format:
+    command: "cargo fmt"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+  lint:
+    command: "cargo clippy"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+  lpi:
+    command: "lpi"
+    platform: "system"
+    options:
+      cache: false
+      runFromWorkspaceRoot: true
+    env:
+      MOON: "$workspaceRoot"

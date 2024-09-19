@@ -1,0 +1,39 @@
+# https://moonrepo.dev/docs/config/tasks
+$schema: "https://moonrepo.dev/schemas/tasks.json"
+implicitInputs:
+  - "/flake.lock"
+  - "/flake.nix"
+  - "/default.nix"
+  - "/Cargo.lock"
+  - "/Cargo.toml"
+
+fileGroups:
+  configs:
+    - "*.config.{js,cjs,mjs}"
+    - "*.json"
+    - "*.toml"
+    - "*.nix"
+  sources:
+    - "src/**/*"
+    - "templates/**/*"
+    - "styles/**/*"
+  assets:
+    - "assets/**/*"
+
+taskOptions:
+  outputStyle: "stream"
+  shell: true
+  unixShell: "bash"
+  windowsShell: "pwsh"
+
+tasks:
+  shell:
+    command: "nom develop -c $SHELL"
+    platform: "system"
+    options:
+      cache: false
+  edit:
+    command: "nvim ."
+    platform: "system"
+    options:
+      cache: false

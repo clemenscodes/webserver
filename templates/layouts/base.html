@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <script src="/assets/htmx.js"></script>
+    <script src="/assets/htmx-json.js"></script>
+    <link href="/assets/main.css" rel="stylesheet"/>
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <div id="content">{% block content %}{% endblock %}</div>
+  </body>
+</html>
