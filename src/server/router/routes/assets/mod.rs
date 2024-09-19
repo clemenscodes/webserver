@@ -3,9 +3,9 @@ use tower_http::services::ServeDir;
 use tracing::{debug, error};
 
 pub fn router() -> Router {
-  let path = std::env::var("KICKBASE_ASSETS").map_or_else(
+  let path = std::env::var("WEBSERVER_ASSETS").map_or_else(
         |_| {
-            debug!("KICKBASE_ASSETS environment variable is not set. Using current directory as the fallback for assets.");
+            debug!("WEBSERVER_ASSETS environment variable is not set. Using current directory as the fallback for assets.");
             std::env::current_dir()
                 .map(|path| path.join("assets"))
                 .unwrap_or_else(|err| {
@@ -14,7 +14,7 @@ pub fn router() -> Router {
                 })
         },
         |path_str| {
-            debug!("KICKBASE_ASSETS environment variable found, using path: {}", path_str);
+            debug!("WEBSERVER_ASSETS environment variable found, using path: {}", path_str);
             std::path::PathBuf::from(path_str)
         }
     );

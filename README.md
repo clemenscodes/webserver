@@ -1,5 +1,8 @@
 # Example Web Server
 
+This is a simple stateless webserver that fetches some data and returns
+HTML to the client.
+
 ## Installation
 
 There are several supported methods to install and run this project.
@@ -8,7 +11,7 @@ For unix systems, the recommended way is to use [nix](https://nixos.org/download
 ### Using [nix](https://nixos.org/download/#download-nix)
 
 ```sh
-nix run github:clemenscodes/kickbase
+nix run github:clemenscodes/example-webserver
 ```
 
 On Windows, using nix in [WSL2](https://learn.microsoft.com/de-de/windows/wsl/about#what-is-wsl-2)
@@ -19,7 +22,7 @@ Alternatively, use either [proto](https://moonrepo.dev/docs/proto) or [docker](h
 First clone this repository using [git](https://git-scm.com/).
 
 ```sh
-git clone https://clemenscodes/kickbase.git
+git clone https://clemenscodes/example-webserver.git
 cd kickbase
 ```
 
