@@ -1,74 +1,43 @@
 {
   inputs = {
-    nixpkgs = {
-      url = "github:NixOS/nixpkgs/nixos-unstable";
-    };
-    flake-utils = {
-      url = "github:numtide/flake-utils";
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
-      inputs = {
-        nixpkgs = {
-          follows = "nixpkgs";
-        };
-      };
-    };
-    lpi = {
-      url = "github:cymenix/lpi";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = {
-    self,
-    nixpkgs,
-    flake-utils,
-    rust-overlay,
-    lpi,
-    ...
-  }:
-    flake-utils.lib.eachDefaultSystem (
-      system: let
-        inherit (nixpkgs) lib;
-        overlays = [(import rust-overlay)];
-        pkgs = import nixpkgs {inherit system lib overlays;};
-        rustToolchain = with pkgs;
-          (pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml).override {
-            extensions = ["rust-src" "clippy" "llvm-tools"];
-          };
-        buildInputs = with pkgs; [pkg-config];
-        nativeBuildInputs = with pkgs; [
-          rustToolchain
-          rust-analyzer
-          openssl
-          proto
-          nix-output-monitor
-          lpi.packages.${pkgs.system}.default
+
+  outputs = inputs: with inputs; flake-utils.lib.eachDefaultSystem (
+    system: let
+      inherit (nixpkgs) lib;
+      overlays = [(import rust-overlay)];
+      pkgs = import nixpkgs { inherit system lib overlays; };
+      bin = pkgs.pkgsBuildHost.rust-bin;
+      rustToolchain = bin.fromRustupToolchainFile ./rust-toolchain.toml;
+      extendedRustToolchain = rustToolchain.override {
+        extensions = [
+          "rust-src"
+          "clippy"
+          "llvm-tools"
         ];
-      in {
-        packages = {
-          default = import ./default.nix {inherit pkgs;};
+      };
+    in with pkgs; {
+      packages = {
+        default = import ./default.nix { inherit pkgs; };
+      };
+      devShells = {
+        default = mkShell {
+          buildInputs = [pkg-config];
+          nativeBuildInputs = [
+            extendedRustToolchain
+            rust-analyzer
+            openssl
+          ];
+          RUST_SRC_PATH = "${rust.packages.stable.rustPlatform.rustLibSrc}";
+          RUST_BACKTRACE = 1;
         };
-        apps = {
-          default = {
-            type = "app";
-            program = "${self.packages.${system}.default}/bin/kickbase";
-          };
-        };
-        devShells = {
-          default = pkgs.mkShell {
-            inherit buildInputs nativeBuildInputs;
-            RUST_BACKTRACE = 1;
-            RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
-            shellHook = ''
-              proto setup --no-modify-profile
-              proto use
-              moon setup
-              export PATH="$HOME/.moon/bin:/$HOME/.proto/bin:$PATH"
-              export MOON="$(pwd)"
-            '';
-          };
-        };
-        formatter = pkgs.alejandra;
-      }
-    );
+      };
+    }
+  );
 }

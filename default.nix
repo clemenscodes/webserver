@@ -1,14 +1,14 @@
 {pkgs}:
 with pkgs; let
-  manifest = (pkgs.lib.importTOML ./Cargo.toml).package;
+  manifest = (lib.importTOML ./Cargo.toml).package;
   inherit (manifest) name version;
   pname = name;
-  src = pkgs.lib.cleanSource ./.;
-  assets = pkgs.stdenv.mkDerivation {
+  src = lib.cleanSource ./.;
+  assets = stdenv.mkDerivation {
     inherit src version;
     pname = "${pname}-assets";
     buildPhase = ''
-      ${pkgs.tailwindcss}/bin/tailwindcss -i styles/tailwind.css -o assets/main.css
+      ${tailwindcss}/bin/tailwindcss -i styles/tailwind.css -o assets/main.css
     '';
     installPhase = ''
       mkdir -p $out
