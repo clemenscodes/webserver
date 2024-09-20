@@ -15,17 +15,17 @@ with pkgs; let
       mv assets $out/assets
     '';
   };
-  webserver-unwrapped = rustPlatform.buildRustPackage {
+  unwrapped = rustPlatform.buildRustPackage {
     inherit src version;
     pname = "${pname}-unwrapped";
     cargoDeps = rustPlatform.importCargoLock {
       lockFile = ./Cargo.lock;
     };
-    cargoHash = "sha256-TcHOR/IWy7J77QKzYsLAvBc8UVE77Vbl06HzjywiFns=";
+    cargoHash = "sha256-EYTuVD1SSk3q4UWBo+736Mby4nFZWFCim3MS9YBsrLc=";
     nativeBuildInputs = [pkg-config];
     buildInputs = [openssl];
   };
 in
   writeShellScriptBin pname ''
-    WEBSERVER_ASSETS=${assets}/assets ${webserver-unwrapped}/bin/webserver
+    WEBSERVER_ASSETS=${assets}/assets ${unwrapped}/bin/webserver
   ''
