@@ -100,15 +100,15 @@ FROM alpine:3.20.2 AS start
 WORKDIR /app
 
 # Copy built sources
-COPY --from=build /app/webserver /usr/local/bin/kickbase
+COPY --from=build /app/webserver /usr/local/bin/webserver
 COPY --from=build /app/assets /app/assets
 
 ENV webserver_ASSETS=/app/assets
 
 # Run as dedicated user account
 RUN addgroup -g 1000 webserver && \
-  adduser -D -s /bin/sh -u 1000 -G webserver kickbase && \
-  chown webserver:kickbase /usr/local/bin/kickbase
+  adduser -D -s /bin/sh -u 1000 -G webserver webserver && \
+  chown webserver:webserver /usr/local/bin/webserver
 
 USER webserver
 
