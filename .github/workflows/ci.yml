@@ -14,5 +14,5 @@ jobs:
       with:
         name: clemenscodes
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix-build
-    - run: nix-shell --run "echo OK"
+    - run: nix build --extra-experimental-features "nix-command flakes"
+    - run: nix develop --extra-experimental-features "nix-command flakes"
