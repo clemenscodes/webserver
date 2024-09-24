@@ -55,8 +55,8 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - uses: DeterminateSystems/flake-checker-action@main
-      - name: Run `nix build`
-        run: nix build
+      - name: Run `nix build --accept-flake-config`
+        run: nix build --accept-flake-config
 
   cachix:
     runs-on: ubuntu-latest
@@ -76,11 +76,11 @@ jobs:
             | cachix push ${{ env.NIX_CACHE }}
       - name: Cache development shell
         run: |
-          nix develop --profile ${{ env.NIX_DEV_PROFILE }} -c true
+          nix develop --accept-flake-config --profile ${{ env.NIX_DEV_PROFILE }} -c true
           cachix push ${{ env.NIX_CACHE }} ${{ env.NIX_DEV_PROFILE }}
       - name: Cache runtime closures
         run: |
-          nix build --json \
+          nix build --accept-flake-config --json \
             | jq -r '.[].outputs | to_entries[].value' \
             | cachix push ${{ env.NIX_CACHE }}
 
