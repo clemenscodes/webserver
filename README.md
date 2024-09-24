@@ -23,7 +23,7 @@ First clone this repository using [git](https://git-scm.com/).
 
 ```sh
 git clone https://clemenscodes/example-webserver.git
-cd kickbase
+cd webserver
 ```
 
 ### Using [proto](https://moonrepo.dev/docs/proto/install)
