@@ -10,10 +10,48 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CACHE: clemenscodes
-  DEV_PROFILE: webserver-dev-profile
+  NIX_CACHE: clemenscodes
+  NIX_DEV_PROFILE: webserver-dev-profile
+  DOCKER_REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+      attestations: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
   magic-nix-cache:
     runs-on: ubuntu-latest
     permissions:
@@ -26,6 +64,7 @@ jobs:
       - uses: DeterminateSystems/flake-checker-action@main
       - name: Run `nix build`
         run: nix build
+
   cachix:
     runs-on: ubuntu-latest
     steps:
@@ -35,20 +74,20 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
       - uses: cachix/cachix-action@v14
         with:
-          name: ${{ env.CACHE }}
+          name: ${{ env.NIX_CACHE }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
       - name: Cache flake inputs
         run: |
           nix flake archive --json \
             | jq -r '.path,(.inputs|to_entries[].value.path)' \
-            | cachix push ${{ env.CACHE }}
+            | cachix push ${{ env.NIX_CACHE }}
       - name: Cache development shell
         run: |
-          nix develop --profile ${{ env.DEV_PROFILE }} -c true
-          cachix push ${{ env.CACHE }} ${{ env.DEV_PROFILE }}
+          nix develop --profile ${{ env.NIX_DEV_PROFILE }} -c true
+          cachix push ${{ env.NIX_CACHE }} ${{ env.NIX_DEV_PROFILE }}
       - name: Cache runtime closures
         run: |
           nix build --json \
             | jq -r '.[].outputs | to_entries[].value' \
-            | cachix push ${{ env.CACHE }}
+            | cachix push ${{ env.NIX_CACHE }}
 
