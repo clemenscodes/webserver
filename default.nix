@@ -1,9 +1,22 @@
-{pkgs}:
+{
+  pkgs,
+  filter,
+}:
 with pkgs; let
   manifest = (lib.importTOML ./Cargo.toml).package;
   inherit (manifest) name version;
   pname = name;
-  src = lib.cleanSource ./.;
+  src = filter {
+    root = ./.;
+    include = [
+      ./src
+      ./styles
+      ./templates
+      ./assets
+      ./Cargo.lock
+      ./Cargo.toml
+    ];
+  };
   assets = stdenv.mkDerivation {
     inherit src version;
     pname = "${pname}-assets";
