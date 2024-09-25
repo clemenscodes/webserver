@@ -1,4 +1,4 @@
-name: CI
+name: Nix Cachix
 on:
   push:
     branches: [main]

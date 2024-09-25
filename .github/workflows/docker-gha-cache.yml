@@ -1,4 +1,4 @@
-name: CI
+name: Docker GHA Cache
 on:
   push:
     branches: [main]
