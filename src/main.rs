@@ -7,6 +7,6 @@ async fn main() {
   trace::setup_tracing();
 
   if let Err(err) = server::start_server().await {
-    tracing::error!("Server suffered a fatal error: {}", err);
+    tracing::error!("Server faced a fatal error: {}", err);
   }
 }
