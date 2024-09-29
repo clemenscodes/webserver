@@ -56,9 +56,7 @@ ENV PKG_CONFIG_ALLOW_CROSS=1
 ENV OPENSSL_STATIC=true
 ENV OPENSSL_DIR=/musl
 
-RUN rm .moon/toolchain.yml && \
-  mv .moon/docker.toolchain.yml .moon/toolchain.yml && \
-  echo "id: webserver" > moon.yml && \
+RUN echo "id: webserver" > moon.yml && \
   echo "project:" >> moon.yml && \
   echo "  name: webserver" >> moon.yml && \
   echo "  description: webserver" >> moon.yml && \
