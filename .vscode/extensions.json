@@ -1,9 +1,8 @@
 {
-  "recommendations": [
-    "mkhl.direnv",
-    "ms-azuretools.vscode-docker",
-    "exiasr.hadolint",
-    "bbenoist.Nix",
-    "kamadorueda.alejandra",
-  ]
+    "recommendations": [
+        "rust-lang.rust-analyzer",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        "moonrepo.moon-console"
+    ]
 }

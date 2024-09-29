@@ -23,7 +23,6 @@ docker:
 tasks:
   dev:
     command: "cargo watch -c -w src -w templates -w styles -- moon run start"
-    local: true
   styles:
     command: "bunx tailwindcss -i styles/tailwind.css -o assets/main.css"
     platform: "system"

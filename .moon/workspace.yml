@@ -27,19 +27,13 @@ constraints:
 experiments:
   strictProjectAliases: true
 
-generator:
-  templates:
-
 hasher:
   batchSize: 2500
-  ignoreMissingPatterns:
-  ignorePatterns:
   warnOnMissingInputs: true
   optimization: "performance"
   walkStrategy: "vcs"
 
 runner:
-  archivableTargets:
   autoCleanCache: true
   inheritColorsForPipedTasks: true
   logRunningCommand: true
