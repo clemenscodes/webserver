@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "mkhl.direnv",
+    "ms-azuretools.vscode-docker",
+    "exiasr.hadolint",
+    "bbenoist.Nix",
+    "kamadorueda.alejandra",
+  ]
+}
