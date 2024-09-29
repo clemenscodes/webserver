@@ -27,3 +27,11 @@ RUN curl -fsSL https://moonrepo.dev/install/proto.sh | bash -s -- 0.40.4 --yes &
   proto install moon
 
 WORKDIR /app
+
+COPY .moon .moon
+COPY .prototools .prototools
+COPY dockerManifest.json dockerManifest.json
+COPY moon.yml moon.yml
+
+RUN moon docker setup && \
+  cargo install cargo-watch --locked
