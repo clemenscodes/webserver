@@ -38,11 +38,15 @@
                   extendedRustToolchain
                   rust-analyzer
                   openssl
+                  proto
+                  moon
+                  alejandra
                 ];
                 RUST_SRC_PATH = "${rust.packages.stable.rustPlatform.rustLibSrc}";
                 RUST_BACKTRACE = 1;
               };
             };
+            formatter = alejandra;
           }
       );
 
