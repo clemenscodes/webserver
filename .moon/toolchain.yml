@@ -5,8 +5,3 @@ bun:
 rust:
   version: '1.80.1'
   syncToolchainConfig: true
-  bins:
-    - bin: 'cargo-nextest'
-      local: true
-    - bin: 'cargo-watch'
-      local: true

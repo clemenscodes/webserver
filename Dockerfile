@@ -1,14 +1,9 @@
-#### BASE STAGE
-#### Installs proto.
-
 FROM rust:1.80.1-slim-bullseye AS base
 
-# Set environment variable to avoid interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL=/bin/bash
 ENV PATH="/root/.proto/bin:$PATH"
 
-#Update the package list and install curl and proto dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
   git=1:2.30.2-1* \
@@ -49,12 +44,8 @@ RUN CC="musl-gcc -fPIE -pie" ./Configure no-shared no-async --prefix=/musl --ope
 
 WORKDIR /app
 
-#### BUILD STAGE
-#### Builds the project.
-
 FROM base AS build
 
-# Copy toolchain
 COPY Cargo.toml Cargo.toml
 COPY Cargo.lock Cargo.lock
 COPY .moon .moon
@@ -65,10 +56,7 @@ ENV PKG_CONFIG_ALLOW_CROSS=1
 ENV OPENSSL_STATIC=true
 ENV OPENSSL_DIR=/musl
 
-# Build only dependencies
-RUN rm .moon/toolchain.yml && \
-  mv .moon/docker.toolchain.yml .moon/toolchain.yml && \
-  echo "id: webserver" > moon.yml && \
+RUN echo "id: webserver" > moon.yml && \
   echo "project:" >> moon.yml && \
   echo "  name: webserver" >> moon.yml && \
   echo "  description: webserver" >> moon.yml && \
@@ -86,26 +74,20 @@ COPY assets assets
 COPY templates templates
 COPY src src
 
-# Build application
 RUN moon run webserver:styles && \
   cargo build --release --target=x86_64-unknown-linux-musl && \
   mv target/x86_64-unknown-linux-musl/release/webserver . && \
   moon docker prune
 
-#### START STAGE
-#### Runs the project.
-
 FROM alpine:3.20.2 AS start
 
 WORKDIR /app
 
-# Copy built sources
 COPY --from=build /app/webserver /usr/local/bin/webserver
 COPY --from=build /app/assets /app/assets
 
 ENV webserver_ASSETS=/app/assets
 
-# Run as dedicated user account
 RUN addgroup -g 1000 webserver && \
   adduser -D -s /bin/sh -u 1000 -G webserver webserver && \
   chown webserver:webserver /usr/local/bin/webserver

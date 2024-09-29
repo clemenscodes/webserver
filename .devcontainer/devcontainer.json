@@ -1,0 +1,24 @@
+{
+  "name": "Rust Development Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        "moonrepo.moon-console"
+      ]
+    }
+  },
+  "postCreateCommand": "moon docker setup && cargo install cargo-watch --locked",
+  "forwardPorts": [
+    8000
+  ],
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/app,type=bind"
+  ]
+}
